@@ -14,12 +14,15 @@ website:
         text: Life Expectancy & Population
       - href: country.qmd
         text: Country Analysis
+      - href: interactive-map.qmd
+        text: Interactive Map
   search: false
 
 format:
   html:
     theme: flatly
     toc: true
+    css: styles.css
 
 execute:
   freeze: auto

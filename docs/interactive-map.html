@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Life Expectancy and GDP per Capita – Gapminder Analysis</title>
+<title>Interactive Map: Life Expectancy by Country – Gapminder Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -84,6 +84,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="site_libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="site_libs/leaflet-binding-2.2.2/leaflet.js"></script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -110,7 +120,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./life-gdp.html" aria-current="page"> 
+    <a class="nav-link" href="./life-gdp.html"> 
 <span class="menu-text">Life Expectancy &amp; GDP</span></a>
   </li>  
   <li class="nav-item">
@@ -122,7 +132,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Country Analysis</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./interactive-map.html"> 
+    <a class="nav-link active" href="./interactive-map.html" aria-current="page"> 
 <span class="menu-text">Interactive Map</span></a>
   </li>  
 </ul>
@@ -141,8 +151,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#life-expectancy-and-gdp-per-capita" id="toc-life-expectancy-and-gdp-per-capita" class="nav-link active" data-scroll-target="#life-expectancy-and-gdp-per-capita">Life Expectancy and GDP per Capita</a></li>
-  <li><a href="#life-expectancy-and-gdp-per-capita-over-time" id="toc-life-expectancy-and-gdp-per-capita-over-time" class="nav-link" data-scroll-target="#life-expectancy-and-gdp-per-capita-over-time">Life Expectancy and GDP per Capita over Time</a></li>
+  <li><a href="#interactive-map-life-expectancy-by-country2007" id="toc-interactive-map-life-expectancy-by-country2007" class="nav-link active" data-scroll-target="#interactive-map-life-expectancy-by-country2007">Interactive Map: Life Expectancy by Country（2007）</a></li>
   </ul>
 </nav>
     </div>
@@ -151,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Life Expectancy and GDP per Capita</h1>
+<h1 class="title">Interactive Map: Life Expectancy by Country</h1>
 </div>
 
 
@@ -168,13 +177,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="life-expectancy-and-gdp-per-capita" class="level1">
-<h1>Life Expectancy and GDP per Capita</h1>
-<p>This page explores how GDP per capita influences life expectancy over time.</p>
+<section id="interactive-map-life-expectancy-by-country2007" class="level1">
+<h1>Interactive Map: Life Expectancy by Country（2007）</h1>
+<p>This interactive map visualizes life expectancy in different countries using data from the <strong>Gapminder dataset</strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary packages</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'dplyr'</code></pre>
@@ -189,74 +196,50 @@ Attaching package: 'dplyr'</code></pre>
 
     intersect, setdiff, setequal, union</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the dataset</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"gapminder.csv"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder, <span class="fu">aes</span>(<span class="at">x =</span> gdp_per_capita, <span class="at">y =</span> life_expectancy, <span class="at">color =</span> continent)) <span class="sc">+</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Life Expectancy vs. GDP per Capita"</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"GDP per Capita (log scale)"</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Life Expectancy"</span>) <span class="sc">+</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="life-gdp_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(maps)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"gapminder.csv"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># get data 2024</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>gapminder_latest <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span> <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2007</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># geodata</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>world_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"world"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">longitude =</span> <span class="fu">mean</span>(<span class="fu">range</span>(long, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">latitude =</span> <span class="fu">mean</span>(<span class="fu">range</span>(lat, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>gapminder_latest <span class="ot">&lt;-</span> gapminder_latest <span class="sc">%&gt;%</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(world_map, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"country"</span> <span class="ot">=</span> <span class="st">"region"</span>))</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(gapminder_latest<span class="sc">$</span>longitude))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12</code></pre>
 </div>
-</div>
-</div>
-</section>
-<section id="life-expectancy-and-gdp-per-capita-over-time" class="level1">
-<h1>Life Expectancy and GDP per Capita over Time</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate data by year to see the overall global trend</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>global_trend <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_life_expectancy =</span> <span class="fu">mean</span>(life_expectancy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_gdp_per_capita =</span> <span class="fu">mean</span>(gdp_per_capita, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot Life Expectancy Trend</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(global_trend, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> avg_life_expectancy)) <span class="sc">+</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Global Trend: Life Expectancy Over Time"</span>,</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Life Expectancy (years)"</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>(gapminder_latest) <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addCircleMarkers</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">lng =</span> <span class="sc">~</span>longitude, <span class="at">lat =</span> <span class="sc">~</span>latitude,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">radius =</span> <span class="sc">~</span>life_expectancy <span class="sc">/</span> <span class="dv">5</span>, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"blue"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">fillOpacity =</span> <span class="fl">0.6</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">popup =</span> <span class="sc">~</span><span class="fu">paste</span>(country, <span class="st">"&lt;br&gt;Life Expectancy:"</span>, life_expectancy)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lng =</span> <span class="dv">0</span>, <span class="at">lat =</span> <span class="dv">20</span>, <span class="at">zoom =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
+<pre><code>Warning in validateCoords(lng, lat, funcName): Data contains 12 rows with
+either missing or invalid lat/lon values and will be ignored</code></pre>
 </div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="life-gdp_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot GDP per Capita Trend</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(global_trend, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> avg_gdp_per_capita)) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"green"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Global Trend: GDP per Capita Over Time"</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average GDP per Capita"</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="life-gdp_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-2519aea55d4aa64b20ac" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-2519aea55d4aa64b20ac">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addCircleMarkers","args":[[33.92417049407959,41.15073394775391,28.03950309753418,-11.22431612014771,-38.41733360290527,-32.40048789978027,47.70041465759277,26.02661228179932,23.68098163604736,50.50099945068359,9.300317764282227,-16.30107402801514,43.91814041137695,-22.32089900970459,-14.24211430549622,42.74067306518555,12.25129461288452,-3.384423971176147,12.55815410614014,7.377367913722992,62.39548301696777,6.633154034614563,15.46025395393372,-36.69887828826904,35.88693809509277,4.099218606948853,-11.86835956573486,null,null,9.630053520202637,null,44.48376274108887,21.52294921875,49.8070068359375,56.18288612365723,11.82480478286743,18.7747802734375,-1.767626821994781,26.82492637634277,13.79755878448486,2.359204083681107,15.19082069396973,9.154199719429016,64.9404296875,46.24101448059082,-0.8070558309555054,13.43813467025757,51.16877365112305,7.964673042297363,38.33913421630859,15.77646446228027,9.944921731948853,11.81003427505493,19.06640529632568,14.74660682678223,null,47.15324592590332,64.96638298034668,21.12229037284851,-2.501318454742432,32.43532752990723,33.2177734375,53.41977500915527,31.45454025268555,41.88498687744141,18.11857891082764,34.88779258728027,31.28134727478027,0.3999512195587158,null,null,29.31523513793945,33.877197265625,-29.61201095581055,6.444507122039795,26.33928298950195,-18.82504844665527,-13.26303768157959,4.106811553239822,17.56943321228027,21.01564931869507,-20.25156307220459,23.63037109375,46.85639572143555,42.70571136474609,28.67529201507568,-18.66298866271973,19.19621562957764,-22.95322322845459,28.3739013671875,52.13271331787109,-30.55839824676514,12.8717041015625,17.60708045959473,9.075122356414795,69.24938774108887,21.50236797332764,30.39502048492432,8.408960103988647,-23.42001914978027,-9.193676924332976,12.95073294639587,51.92946815490723,39.5714111328125,18.23471736907959,-21.11709022521973,45.96714019775391,-1.935839831829071,0.8732423968613148,24.24814414978027,14.50346755981445,44.20566368103027,8.4515380859375,1.356225490570068,null,46.14582633972168,5.144189536571503,-34.55459022521973,39.89523887634277,7.881030321121216,15.43403339385986,-26.52646541595459,62.19162559509277,46.80283164978027,34.80727577209473,23.6009521484375,-6.355566531419754,13.03059053421021,8.602514266967773,null,33.78488922119141,38.96235275268555,1.375146329402924,null,null,-32.51694297790527,6.432934284210205,15.9642333984375,null,null,-13.11757802963257,-19.02255821228027],[67.68852806091309,20.15585899353027,1.642260551452637,17.89487361907959,-63.62240791320801,135.9335403442383,13.335693359375,50.53496170043945,90.32753753662109,4.444677829742432,2.298925817012787,-63.5706787109375,17.66020536422729,24.67109489440918,-54.40376091003418,25.46469688415527,-1.567187309265137,29.91279315948486,104.9625968933105,12.35810613632202,-96.82790756225586,20.91723585128784,18.7158203125,-87.93495941162109,104.1798286437988,-72.95073318481445,43.87670707702637,null,null,-84.23579406738281,null,16.45908212661743,-79.51200866699219,15.46098613739014,11.62929677963257,42.58720779418945,-70.16977310180664,-83.45188140869141,30.78730583190918,-88.91061782836914,9.884814262390137,39.771728515625,40.48857307434082,25.52778339385986,2.396972417831421,11.59184551239014,-15.32575654983521,10.43706059455872,-1.028344631195068,23.93916034698486,-90.23173522949219,-11.36621046066284,-15.19267606735229,-73.06171798706055,-86.26005554199219,null,19.48486328125,-19.01589345932007,82.75429916381836,118.0914039611816,53.66421127319336,43.66001129150391,-8.208813428878784,35.07939338684082,12.55678725242615,-77.275146484375,134.7563934326172,37.12177848815918,37.89199256896973,null,null,47.48696327209473,35.84677696228027,28.22124099731445,-9.453710317611694,17.23037099838257,46.86992073059082,34.28159141540527,109.456298828125,-4.022973299026489,-10.94328618049622,57.55483436584473,-102.548828125,103.8205070495605,19.39199256896973,-9.034301936626434,35.53315448760986,96.66342926025391,18.490234375,84.10659027099609,5.27368152141571,0.8442840576171875,-85.41384124755859,8.06352523714304,8.656592011451721,12.26520919799805,55.90756797790527,68.94599533081055,-80.11166763305664,-58.44638633728027,-75.01093673706055,121.7814445495605,19.11718702316284,-7.846118211746216,-66.615966796875,55.53594017028809,24.97382736206055,29.86709117889404,6.960254192352295,45.12861251831055,-14.45903348922729,20.907958984375,-11.78793954849243,103.8232917785645,null,14.94721651077271,46.17734336853027,27.16762638092041,-2.456787586212158,80.79238510131836,30.21738147735596,31.45019435882568,17.65131855010986,8.212304592132568,39.06176567077637,120.108154296875,34.89350509643555,101.5074691772461,0.8438722528517246,null,9.515771150588989,35.24306678771973,32.27006721496582,null,null,-55.78186225891113,-66.59755897521973,105.7861824035645,null,null,27.82021617889404,29.11538219451904],[8.765600000000001,15.2846,14.4602,8.546200000000001,15.064,16.247,15.9658,15.127,12.8124,15.8882,11.3456,13.1108,14.9704,10.1456,14.478,14.601,10.459,9.916,11.9446,10.086,16.1306,8.9482,10.1302,15.7106,14.5922,14.5778,13.0304,9.292400000000001,11.0644,15.7564,9.665600000000001,15.1496,15.6546,15.2972,15.6664,10.9582,14.447,14.9988,14.2676,14.3756,10.3158,11.608,10.5894,15.8626,16.1314,11.347,11.8896,15.8812,12.0044,15.8966,14.0518,11.2014,9.2776,12.1832,14.0396,16.4416,14.6676,16.3514,12.9396,14.13,14.1928,11.909,15.777,16.149,16.1092,14.5134,16.5206,14.507,10.822,13.4594,15.7246,15.5176,14.3986,8.5184,9.1356,14.7904,11.8886,9.660599999999999,14.8482,10.8934,12.8328,14.5602,15.239,13.3606,14.9086,14.2328,8.416399999999999,12.4138,10.5812,12.757,15.9524,16.0408,14.5798,11.3734,9.3718,16.0392,15.128,13.0966,15.1074,14.3504,14.2842,14.3376,15.1126,15.6196,15.7492,15.2884,14.4952,9.2484,13.1056,14.5554,12.6124,14.8004,8.5136,15.9944,14.9326,15.5852,9.6318,9.867799999999999,16.1882,14.4792,11.7112,7.9226,16.1768,16.3402,14.8286,15.68,10.5034,14.1232,11.684,13.9638,14.7846,14.3554,10.3084,15.885,15.6484,15.2768,14.7494,14.8498,14.6844,12.5396,8.476800000000001,8.6974],null,null,{"interactive":true,"className":"","stroke":false,"color":"blue","weight":5,"opacity":0.5,"fill":true,"fillColor":"blue","fillOpacity":0.6},null,null,["Afghanistan <br>Life Expectancy: 43.828","Albania <br>Life Expectancy: 76.423","Algeria <br>Life Expectancy: 72.301","Angola <br>Life Expectancy: 42.731","Argentina <br>Life Expectancy: 75.32","Australia <br>Life Expectancy: 81.235","Austria <br>Life Expectancy: 79.829","Bahrain <br>Life Expectancy: 75.635","Bangladesh <br>Life Expectancy: 64.062","Belgium <br>Life Expectancy: 79.441","Benin <br>Life Expectancy: 56.728","Bolivia <br>Life Expectancy: 65.554","Bosnia and Herzegovina <br>Life Expectancy: 74.852","Botswana <br>Life Expectancy: 50.728","Brazil <br>Life Expectancy: 72.39","Bulgaria <br>Life Expectancy: 73.005","Burkina Faso <br>Life Expectancy: 52.295","Burundi <br>Life Expectancy: 49.58","Cambodia <br>Life Expectancy: 59.723","Cameroon <br>Life Expectancy: 50.43","Canada <br>Life Expectancy: 80.653","Central African Republic <br>Life Expectancy: 44.741","Chad <br>Life Expectancy: 50.651","Chile <br>Life Expectancy: 78.553","China <br>Life Expectancy: 72.961","Colombia <br>Life Expectancy: 72.889","Comoros <br>Life Expectancy: 65.152","Congo, Dem. Rep. <br>Life Expectancy: 46.462","Congo, Rep. <br>Life Expectancy: 55.322","Costa Rica <br>Life Expectancy: 78.782","Cote d'Ivoire <br>Life Expectancy: 48.328","Croatia <br>Life Expectancy: 75.748","Cuba <br>Life Expectancy: 78.273","Czech Republic <br>Life Expectancy: 76.486","Denmark <br>Life Expectancy: 78.332","Djibouti <br>Life Expectancy: 54.791","Dominican Republic <br>Life Expectancy: 72.235","Ecuador <br>Life Expectancy: 74.994","Egypt <br>Life Expectancy: 71.338","El Salvador <br>Life Expectancy: 71.878","Equatorial Guinea <br>Life Expectancy: 51.579","Eritrea <br>Life Expectancy: 58.04","Ethiopia <br>Life Expectancy: 52.947","Finland <br>Life Expectancy: 79.313","France <br>Life Expectancy: 80.657","Gabon <br>Life Expectancy: 56.735","Gambia <br>Life Expectancy: 59.448","Germany <br>Life Expectancy: 79.406","Ghana <br>Life Expectancy: 60.022","Greece <br>Life Expectancy: 79.483","Guatemala <br>Life Expectancy: 70.259","Guinea <br>Life Expectancy: 56.007","Guinea-Bissau <br>Life Expectancy: 46.388","Haiti <br>Life Expectancy: 60.916","Honduras <br>Life Expectancy: 70.198","Hong Kong, China <br>Life Expectancy: 82.208","Hungary <br>Life Expectancy: 73.338","Iceland <br>Life Expectancy: 81.757","India <br>Life Expectancy: 64.698","Indonesia <br>Life Expectancy: 70.65","Iran <br>Life Expectancy: 70.964","Iraq <br>Life Expectancy: 59.545","Ireland <br>Life Expectancy: 78.885","Israel <br>Life Expectancy: 80.745","Italy <br>Life Expectancy: 80.546","Jamaica <br>Life Expectancy: 72.567","Japan <br>Life Expectancy: 82.603","Jordan <br>Life Expectancy: 72.535","Kenya <br>Life Expectancy: 54.11","Korea, Dem. Rep. <br>Life Expectancy: 67.297","Korea, Rep. <br>Life Expectancy: 78.623","Kuwait <br>Life Expectancy: 77.588","Lebanon <br>Life Expectancy: 71.993","Lesotho <br>Life Expectancy: 42.592","Liberia <br>Life Expectancy: 45.678","Libya <br>Life Expectancy: 73.952","Madagascar <br>Life Expectancy: 59.443","Malawi <br>Life Expectancy: 48.303","Malaysia <br>Life Expectancy: 74.241","Mali <br>Life Expectancy: 54.467","Mauritania <br>Life Expectancy: 64.164","Mauritius <br>Life Expectancy: 72.801","Mexico <br>Life Expectancy: 76.195","Mongolia <br>Life Expectancy: 66.803","Montenegro <br>Life Expectancy: 74.543","Morocco <br>Life Expectancy: 71.164","Mozambique <br>Life Expectancy: 42.082","Myanmar <br>Life Expectancy: 62.069","Namibia <br>Life Expectancy: 52.906","Nepal <br>Life Expectancy: 63.785","Netherlands <br>Life Expectancy: 79.762","New Zealand <br>Life Expectancy: 80.204","Nicaragua <br>Life Expectancy: 72.899","Niger <br>Life Expectancy: 56.867","Nigeria <br>Life Expectancy: 46.859","Norway <br>Life Expectancy: 80.196","Oman <br>Life Expectancy: 75.64","Pakistan <br>Life Expectancy: 65.483","Panama <br>Life Expectancy: 75.537","Paraguay <br>Life Expectancy: 71.752","Peru <br>Life Expectancy: 71.421","Philippines <br>Life Expectancy: 71.688","Poland <br>Life Expectancy: 75.563","Portugal <br>Life Expectancy: 78.098","Puerto Rico <br>Life Expectancy: 78.746","Reunion <br>Life Expectancy: 76.442","Romania <br>Life Expectancy: 72.476","Rwanda <br>Life Expectancy: 46.242","Sao Tome and Principe <br>Life Expectancy: 65.528","Saudi Arabia <br>Life Expectancy: 72.777","Senegal <br>Life Expectancy: 63.062","Serbia <br>Life Expectancy: 74.002","Sierra Leone <br>Life Expectancy: 42.568","Singapore <br>Life Expectancy: 79.972","Slovak Republic <br>Life Expectancy: 74.663","Slovenia <br>Life Expectancy: 77.926","Somalia <br>Life Expectancy: 48.159","South Africa <br>Life Expectancy: 49.339","Spain <br>Life Expectancy: 80.941","Sri Lanka <br>Life Expectancy: 72.396","Sudan <br>Life Expectancy: 58.556","Swaziland <br>Life Expectancy: 39.613","Sweden <br>Life Expectancy: 80.884","Switzerland <br>Life Expectancy: 81.701","Syria <br>Life Expectancy: 74.143","Taiwan <br>Life Expectancy: 78.4","Tanzania <br>Life Expectancy: 52.517","Thailand <br>Life Expectancy: 70.616","Togo <br>Life Expectancy: 58.42","Trinidad and Tobago <br>Life Expectancy: 69.819","Tunisia <br>Life Expectancy: 73.923","Turkey <br>Life Expectancy: 71.777","Uganda <br>Life Expectancy: 51.542","United Kingdom <br>Life Expectancy: 79.425","United States <br>Life Expectancy: 78.242","Uruguay <br>Life Expectancy: 76.384","Venezuela <br>Life Expectancy: 73.747","Vietnam <br>Life Expectancy: 74.249","West Bank and Gaza <br>Life Expectancy: 73.422","Yemen, Rep. <br>Life Expectancy: 62.698","Zambia <br>Life Expectancy: 42.384","Zimbabwe <br>Life Expectancy: 43.487"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-38.41733360290527,69.24938774108887],"lng":[-102.548828125,135.9335403442383]},"setView":[[20,0],2,[]]},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 
