@@ -1,0 +1,61 @@
+---
+title: "Life Expectancy and GDP per Capita"
+format: html
+---
+
+# Life Expectancy and GDP per Capita
+
+This page explores how GDP per capita influences life expectancy over time.
+
+```{r}
+# Load necessary packages
+library(ggplot2)
+library(dplyr)
+
+# Read the dataset
+gapminder <- read.csv("gapminder.csv")
+
+# Plot
+ggplot(gapminder, aes(x = gdp_per_capita, y = life_expectancy, color = continent)) +
+  geom_point(alpha = 0.6) +
+  scale_x_log10() +
+  labs(title = "Life Expectancy vs. GDP per Capita",
+       x = "GDP per Capita (log scale)",
+       y = "Life Expectancy") +
+  theme_minimal()
+```
+
+# Life Expectancy and GDP per Capita over Time
+
+```{r}
+# Aggregate data by year to see the overall global trend
+global_trend <- gapminder %>%
+  group_by(year) %>%
+  summarize(
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE),
+    avg_gdp_per_capita = mean(gdp_per_capita, na.rm = TRUE)
+  )
+
+# Plot Life Expectancy Trend
+ggplot(global_trend, aes(x = year, y = avg_life_expectancy)) +
+  geom_line(color = "blue", size = 1) +
+  labs(
+    title = "Global Trend: Life Expectancy Over Time",
+    x = "Year",
+    y = "Average Life Expectancy (years)"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+# Plot GDP per Capita Trend
+ggplot(global_trend, aes(x = year, y = avg_gdp_per_capita)) +
+  geom_line(color = "green", size = 1) +
+  labs(
+    title = "Global Trend: GDP per Capita Over Time",
+    x = "Year",
+    y = "Average GDP per Capita"
+  ) +
+  theme_minimal()
+```

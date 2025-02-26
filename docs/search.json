@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "create-dataset.html",
+    "href": "create-dataset.html",
+    "title": "Create the Gapminder dataset",
+    "section": "",
+    "text": "# Import necessary libraries\nimport pandas as pd\nfrom gapminder import gapminder\n\n# Rename 'lifeExp' to 'life_expectancy' and 'gdpPercap' to 'gdp_per_capita'\ngapminder = gapminder.rename(columns={'lifeExp': 'life_expectancy',\n                                      'pop': 'population_millions', \n                                      'gdpPercap': 'gdp_per_capita'})\n\n# Convert population to millions\ngapminder['population_millions'] = gapminder['population_millions'] / 1_000_000\n\n# Create a new pandas DataFrame from the modified gapminder data\ngapminder_df = pd.DataFrame(gapminder)\n\n# Save the DataFrame as a CSV file\ngapminder_df.to_csv('gapminder.csv', index=False)\n\n# Print the first 3 rows of the DataFrame\nprint(gapminder_df.head(3))\n\n       country continent  year  life_expectancy  population_millions  \\\n0  Afghanistan      Asia  1952           28.801             8.425333   \n1  Afghanistan      Asia  1957           30.332             9.240934   \n2  Afghanistan      Asia  1962           31.997            10.267083   \n\n   gdp_per_capita  \n0      779.445314  \n1      820.853030  \n2      853.100710"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Gapminder Analysis",
+    "section": "",
+    "text": "Welcome to the Gapminder Analysis Website\nThis website provides an analysis of the Gapminder dataset, which tracks life expectancy, GDP per capita, and population across various countries from 1952 to 2007.\nExplore our analyses: - Life Expectancy and GDP per Capita - Life Expectancy and Population - Country Analysis"
+  },
+  {
+    "objectID": "country.html",
+    "href": "country.html",
+    "title": "Country Analysis",
+    "section": "",
+    "text": "Country Analysis\nThis page analyzes life expectancy, GDP per capita, and population trends for a specific country.\n\n# Plot\nlibrary(ggplot2)\nlibrary(gridExtra)\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following object is masked from 'package:gridExtra':\n\n    combine\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\ngapminder &lt;- read.csv(\"gapminder.csv\")\n\n# Choose a country (example: United States)\ncountry_data &lt;- gapminder %&gt;% filter(country == \"United States\")\n\np1 &lt;- ggplot(country_data, aes(x = year, y = life_expectancy)) +\n  geom_line(color = \"blue\") +\n  labs(title = \"Life Expectancy Over Time\", x = \"Year\", y = \"Life Expectancy\") +\n  theme_minimal()\n\np2 &lt;- ggplot(country_data, aes(x = year, y = gdp_per_capita)) +\n  geom_line(color = \"green\") +\n  labs(title = \"GDP per Capita Over Time\", x = \"Year\", y = \"GDP per Capita\") +\n  theme_minimal()\n\np3 &lt;- ggplot(country_data, aes(x = year, y = population_millions)) +\n  geom_line(color = \"red\") +\n  labs(title = \"Population Over Time\", x = \"Year\", y = \"Population (millions)\") +\n  theme_minimal()\n\ngrid.arrange(p1, p2, p3, ncol = 1)"
+  },
+  {
+    "objectID": "life-gdp.html",
+    "href": "life-gdp.html",
+    "title": "Life Expectancy and GDP per Capita",
+    "section": "",
+    "text": "Life Expectancy and GDP per Capita\nThis page explores how GDP per capita influences life expectancy over time.\n\n# Load necessary packages\nlibrary(ggplot2)\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\n# Read the dataset\ngapminder &lt;- read.csv(\"gapminder.csv\")\n\n# Plot\nggplot(gapminder, aes(x = gdp_per_capita, y = life_expectancy, color = continent)) +\n  geom_point(alpha = 0.6) +\n  scale_x_log10() +\n  labs(title = \"Life Expectancy vs. GDP per Capita\",\n       x = \"GDP per Capita (log scale)\",\n       y = \"Life Expectancy\") +\n  theme_minimal()\n\n\n\n\n\n\n\n\n\n\nLife Expectancy and GDP per Capita over Time\n\n# Aggregate data by year to see the overall global trend\nglobal_trend &lt;- gapminder %&gt;%\n  group_by(year) %&gt;%\n  summarize(\n    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE),\n    avg_gdp_per_capita = mean(gdp_per_capita, na.rm = TRUE)\n  )\n\n# Plot Life Expectancy Trend\nggplot(global_trend, aes(x = year, y = avg_life_expectancy)) +\n  geom_line(color = \"blue\", size = 1) +\n  labs(\n    title = \"Global Trend: Life Expectancy Over Time\",\n    x = \"Year\",\n    y = \"Average Life Expectancy (years)\"\n  ) +\n  theme_minimal()\n\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n\n\n\n\n\n\n\n\n\n\n# Plot GDP per Capita Trend\nggplot(global_trend, aes(x = year, y = avg_gdp_per_capita)) +\n  geom_line(color = \"green\", size = 1) +\n  labs(\n    title = \"Global Trend: GDP per Capita Over Time\",\n    x = \"Year\",\n    y = \"Average GDP per Capita\"\n  ) +\n  theme_minimal()"
+  },
+  {
+    "objectID": "life-population.html",
+    "href": "life-population.html",
+    "title": "Life Expectancy and Population",
+    "section": "",
+    "text": "Life Expectancy and Population\nThis page explores how population size correlates with life expectancy.\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(ggplot2)\nlibrary(gridExtra)\n\n\nAttaching package: 'gridExtra'\n\n\nThe following object is masked from 'package:dplyr':\n\n    combine\n\ngapminder &lt;- read.csv(\"gapminder.csv\")\n\n# Plot\nggplot(gapminder, aes(x = population_millions, y = life_expectancy, color = continent)) +\n  geom_point(alpha = 0.6) +\n  scale_x_log10() +\n  labs(title = \"Life Expectancy vs. Population\",\n       x = \"Population (millions, log scale)\",\n       y = \"Life Expectancy\") +\n  theme_minimal()"
+  }
+]

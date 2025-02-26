@@ -1,0 +1,17 @@
+{
+  "hash": "19b3c346cf4126d1a02c56f84a975b2d",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Life Expectancy and GDP per Capita\"\nformat: html\n---\n\n\n\n\n# Life Expectancy and GDP per Capita\n\nThis page explores how GDP per capita influences life expectancy over time.\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n# Load necessary packages\nlibrary(ggplot2)\nlibrary(dplyr)\n```\n\n::: {.cell-output .cell-output-stderr}\n\n```\n\nAttaching package: 'dplyr'\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n```\n\n\n:::\n\n```{.r .cell-code}\n# Read the dataset\ngapminder <- read.csv(\"gapminder.csv\")\n\n# Plot\nggplot(gapminder, aes(x = gdp_per_capita, y = life_expectancy, color = continent)) +\n  geom_point(alpha = 0.6) +\n  scale_x_log10() +\n  labs(title = \"Life Expectancy vs. GDP per Capita\",\n       x = \"GDP per Capita (log scale)\",\n       y = \"Life Expectancy\") +\n  theme_minimal()\n```\n\n::: {.cell-output-display}\n![](life-gdp_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n\n\n\n\n# Life Expectancy and GDP per Capita over Time\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n# Aggregate data by year to see the overall global trend\nglobal_trend <- gapminder %>%\n  group_by(year) %>%\n  summarize(\n    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE),\n    avg_gdp_per_capita = mean(gdp_per_capita, na.rm = TRUE)\n  )\n\n# Plot Life Expectancy Trend\nggplot(global_trend, aes(x = year, y = avg_life_expectancy)) +\n  geom_line(color = \"blue\", size = 1) +\n  labs(\n    title = \"Global Trend: Life Expectancy Over Time\",\n    x = \"Year\",\n    y = \"Average Life Expectancy (years)\"\n  ) +\n  theme_minimal()\n```\n\n::: {.cell-output .cell-output-stderr}\n\n```\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n```\n\n\n:::\n\n::: {.cell-output-display}\n![](life-gdp_files/figure-html/unnamed-chunk-2-1.png){width=672}\n:::\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\n# Plot GDP per Capita Trend\nggplot(global_trend, aes(x = year, y = avg_gdp_per_capita)) +\n  geom_line(color = \"green\", size = 1) +\n  labs(\n    title = \"Global Trend: GDP per Capita Over Time\",\n    x = \"Year\",\n    y = \"Average GDP per Capita\"\n  ) +\n  theme_minimal()\n```\n\n::: {.cell-output-display}\n![](life-gdp_files/figure-html/unnamed-chunk-3-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "life-gdp_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

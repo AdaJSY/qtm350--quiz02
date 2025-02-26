@@ -1,0 +1,17 @@
+{
+  "hash": "15a1b7ad6286dbaf3b8a1bb2a8e0df84",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Life Expectancy and Population\"\nformat: html\n---\n\n\n\n\n# Life Expectancy and Population\n\nThis page explores how population size correlates with life expectancy.\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(dplyr)\n```\n\n::: {.cell-output .cell-output-stderr}\n\n```\n\nAttaching package: 'dplyr'\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n```\n\n\n:::\n\n```{.r .cell-code}\nlibrary(ggplot2)\nlibrary(gridExtra)\n```\n\n::: {.cell-output .cell-output-stderr}\n\n```\n\nAttaching package: 'gridExtra'\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nThe following object is masked from 'package:dplyr':\n\n    combine\n```\n\n\n:::\n\n```{.r .cell-code}\ngapminder <- read.csv(\"gapminder.csv\")\n\n# Plot\nggplot(gapminder, aes(x = population_millions, y = life_expectancy, color = continent)) +\n  geom_point(alpha = 0.6) +\n  scale_x_log10() +\n  labs(title = \"Life Expectancy vs. Population\",\n       x = \"Population (millions, log scale)\",\n       y = \"Life Expectancy\") +\n  theme_minimal()\n```\n\n::: {.cell-output-display}\n![](life-population_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "life-population_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
